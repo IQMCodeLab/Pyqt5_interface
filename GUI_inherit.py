@@ -42,7 +42,8 @@ from PyQt5.QtWidgets import *
 from subtract_fit import *
 import matplotlib.pyplot as plt
 from contrast_ratio import Ui_Form_contrast
-
+from Base_Ui import Baseui
+from linecut import Ui_Form
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -59,6 +60,8 @@ class Ui_MainWindow(object):
         self.ax =self.figure.add_subplot(111)
         self.counts = 0
         self.count_bin = 0
+        self.color_count = 0
+        self.fft_count = 1
         self.canvas.draw()
         #self.graphicsView = QtWidgets.QGraphicsView(self.centralwidget)
         #self.graphicsView.setObjectName("graphicsView")
@@ -82,7 +85,6 @@ class Ui_MainWindow(object):
         self.menu_5.setObjectName("图形处理")
         self.menu_6 = QtWidgets.QMenu(self.menubar)
         self.menu_6.setObjectName('绘制linecut')
-
 
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -117,6 +119,9 @@ class Ui_MainWindow(object):
 
         self.actionlincut = QtWidgets.QAction(MainWindow)
         self.actionlincut.setObjectName('select two point')
+        self.actiondrawfunction = QtWidgets.QAction(MainWindow)
+        self.actiondrawfunction.setObjectName('绘制linecut')
+
 
         self.menu.addAction(self.actionopen3ds)
         self.menu.addAction(self.actionopenpythonbin)
@@ -133,6 +138,7 @@ class Ui_MainWindow(object):
         self.menu_5.addAction(self.actioncutfigure)
 
         self.menu_6.addAction(self.actionlincut)
+        self.menu_6.addAction(self.actiondrawfunction)
 
         self.menubar.addAction(self.menu.menuAction())
         self.menubar.addAction(self.menu_2.menuAction())
@@ -142,7 +148,6 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu_6.menuAction())
 
 
-        self.color_count = 0
         """
         self.cmaplist = ['viridis', 'plasma', 'inferno', 'magma', 'cividis', 'Greys', 'Purples', 'Blues', 'Greens',
                          'Oranges', 'Reds',
@@ -163,6 +168,7 @@ class Ui_MainWindow(object):
         self.actionoDoingDrfitCorrection.triggered.connect(self.driftcorrection)
         self.actioncutfigure.triggered.connect(self.cutfigure)
         self.actionlincut.triggered.connect(self.linecuts)
+        self.actiondrawfunction.triggered.connect(self.actiondrawlinefunction)
         #self.shortcut_change_color = QShortcut(QKeySequence(self.tr("Ctrl+Q")),self)
         #self.shortcut_change_color.activated.connect(self.changecolor)
         #self.shortcut_choose_color = QShortcut(QKeySequence('Ctrl+P'),self)
@@ -178,7 +184,7 @@ class Ui_MainWindow(object):
         self.shortcut_3 = QShortcut(QKeySequence('Ctrl+B'),self.centralwidget,self.savedata_bin)
         #self.shortcut_3 = QShortcut(QKeySequence('F'),self.centralwidget,self.ffts)
         self.shortcut_4 = QShortcut(QKeySequence('F11'),self.centralwidget,self.contrast_ratio)
-
+        self.shortcut_5 = QShortcut(QKeySequence('Ctrl+F'),self.centralwidget,self.fouriertransform)
         self.retranslateUi(MainWindow)
 
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -231,14 +237,16 @@ class Ui_MainWindow(object):
         #self.topo = fieldops.subtractMeanPlane(self.topo)
         self.topomap_draw()
 
-
+    def fourier_draw(self,fftdata):
+        self.ax.clear()
+        self.ax.axis('on')
+        self.ax.pcolormesh(fftdata,cmap=plt.get_cmap(self.cmap))
+        self.canvas.draw()
     def topomap_draw(self):
         self.ax.clear()
         self.ax.axis('on')
         self.ax.pcolormesh(self.topo,cmap=plt.get_cmap(self.cmap))
         self.canvas.draw()
-
-
     def topomap_draw_2(self,vmin,vmax):
         self.vmin = np.percentile(self.topo,vmin)
         self.vmax = np.percentile(self.topo,vmax)
@@ -254,7 +262,14 @@ class Ui_MainWindow(object):
         #self.topo = fieldops.detectNaN(self.topo)
         self.topomap_draw()
 
-
+    def fouriertransform(self):
+        if self.fft_count%2 ==0:
+            self.fftdata = np.fft.fft2(self.topo)
+            self.fftdata = np.log10(np.abs(np.fft.fftshift(self.fftdata))**2)
+            self.fourier_draw(self.fftdata)
+        elif self.fft_count%2 == 1:
+            self.topomap_draw()
+        self.fft_count = self.fft_count + 1
     def choose_impurity(self):
         self.windows = Ui_Form_impurity(self.topo)
         self.windows.exec_()
@@ -322,7 +337,9 @@ class Ui_MainWindow(object):
     def linecuts(self):
         self.Windows = Ui_Form_linecut(self.topo)
         self.Windows.exec_()
-
+    def actiondrawlinefunction(self):
+        self.windows = Ui_Form(self.topo)#Baseui()
+        self.windows.show()
     """
     @pyqtSlot()
     def KeyPressEvent(self,event):
@@ -360,6 +377,7 @@ class Ui_MainWindow(object):
         self.actionoDoingDrfitCorrection.setText(_translate("MainWindow","DriftCorrection"))
         self.actioncutfigure.setText(_translate("MainWindow","cutfigure"))
         self.actionlincut.setText(_translate("MainWindow",'choose two point '))
+        self.actiondrawfunction.setText(_translate("MainWindow",'绘制linecut'))
 
 
 

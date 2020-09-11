@@ -1,30 +1,7 @@
 import os
-import sys
-import nanonispy as nap
-import string
-import numpy as np
-import matplotlib.pyplot  as plt
-import tkinter as tk
-from tkinter import filedialog
-import matplotlib.cm as cm
-import matplotlib.cbook as cbook
-from matplotlib.path import Path
-from matplotlib.patches import PathPatch
-from scipy import interpolate
-import struct
-import itertools
-from struct import unpack
-from scipy.interpolate import interp1d
-from scipy.interpolate import Rbf, InterpolatedUnivariateSpline
-
-
-# 打开 grid 文件
-import os
 import nanonispy as nap
 import numpy as np
 import struct
-
-
 def openup(file_path):
     if os.path.splitext(file_path)[-1][1:] == '3ds':
         example = nap.read.Grid(file_path)
@@ -32,7 +9,6 @@ def openup(file_path):
     elif os.path.splitext(file_path)[-1][1:] == 'sxm':
         example1 = nap.read.Scan(file_path)
         _sxm_read(example1, file_path)
-
 
 
 def _3ds_read(example, file_path):
@@ -118,6 +94,7 @@ def _sxm_read(example, file_path):
                 write_two_dimensional_bin(file,datas,x,y)
     return New_path
 
+
 def write_three_dimensional_bin(file,data,sweep_signals,x,y):
     len_x,len_y,len_z = np.shape(data)
     datas = struct.pack('>i',len_x)
@@ -139,9 +116,9 @@ def write_three_dimensional_bin(file,data,sweep_signals,x,y):
     for n in range(len_z):
         for i in range(len_x):
             for j in range(len_y):
-                datas = struct.pack('>d',data[i][j][n])
+                datas = struct.pack('>d',data[j][i][n])
                 file.write(datas)
-    file.close()
+
 
 def write_two_dimensional_bin(file,data,x,y):
     len_x,len_y = np.shape(data)
@@ -149,9 +126,9 @@ def write_two_dimensional_bin(file,data,x,y):
     file.write(datas)
     datas = struct.pack('>i',len_y)
     file.write(datas)
-    datas=struct.pack('>d',1.0)
+    datas=struct.pack(">d",1.0)
     file.write(datas)
-    datas=struct.pack('>d',1.0)
+    datas=struct.pack(">d",1.0)
     file.write(datas)
     for i in range(len_x):
         datas = struct.pack('>d', x[i])
@@ -161,7 +138,7 @@ def write_two_dimensional_bin(file,data,x,y):
         file.write(datas)
     for i in range(len_x):
         for j in range(len_y):
-            datas = struct.pack('>d', data[i][j])
+            datas = struct.pack('>d', data[j][i])
             file.write(datas)
     file.close()
 
@@ -175,43 +152,10 @@ def write_one_dimensional_bin(file,data):
         file.write(datas)
     file.close()
 
+import tkinter as tk
+from tkinter import filedialog
+root = tk.Tk()
+root.withdraw()
+file_path = filedialog.askopenfilename()
+openup(file_path)
 
-def write_txt_file(filepath,ans,name):
-    New_path = filepath
-    import os
-    if not os.path.exists(New_path):
-        os.makedirs(New_path)
-    if os.path.exists(New_path+'/'+name+'.txt'):
-        os.remove(New_path+'/'+name+'.txt')
-    file = open(New_path+'/'+name+'.txt','a')
-    len_x,len_y = np.shape(ans)
-    for i in range(len_y):
-        file.write(str(i+1))
-        file.write('\t')
-    file.write('\n')
-    for i in range(len_x):
-        file.write(str(i+1))
-        file.write('\t')
-        for j in range(len_y):
-            file.write(str(ans[i][j]))
-            file.write('\t')
-        file.write('\n')
-    file.close()
-
-
-def write_txt_without_series(filepath,ans,name):
-    New_path = filepath
-    import os
-    if not os.path.exists(New_path):
-        os.makedirs(New_path)
-    if os.path.exists(New_path+'/'+name+'.txt'):
-        os.remove(New_path+'/'+name+'.txt')
-    file = open(New_path+'/'+name+'.txt','a')
-    len_x,len_y = np.shape(ans)
-    for i in range(len_x):
-        for j in range(len_y):
-            file.write(str(ans[i][j]))
-            file.write('\t')
-        file.write('\n')
-    file.close()
-#def write_txt_without_series()

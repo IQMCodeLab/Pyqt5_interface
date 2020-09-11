@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>805</width>
+    <height>709</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QGraphicsView" name="graphicsView"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>805</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>打开文件</string>
+    </property>
+    <addaction name="actionopen3ds"/>
+    <addaction name="actionopenbin"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>调节颜色</string>
+    </property>
+    <addaction name="actionchoose_color"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>确定杂质位置</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_mask">
+    <property name="title">
+     <string>选择mask</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
+   <addaction name="menu_mask"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionchoose_color">
+   <property name="text">
+    <string>choose color</string>
+   </property>
+  </action>
+  <action name="actionopen3ds">
+   <property name="text">
+    <string>open3ds</string>
+   </property>
+  </action>
+  <action name="actionopenbin">
+   <property name="text">
+    <string>openbin</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

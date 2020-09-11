@@ -25,11 +25,19 @@ class BraggVectorRegularizer:
         self.rotMatT = Matrix.putRotationMatrix(-self.angle)
 
     def setFirstBraggPeak(self, bragg):
+        """
+        :param bragg:
+        :return:
+        """
         for i in range(2):
             self.braggSetRot[0][0][i] = bragg[i]
         self.braggSetRot[0][1] = Matrix.getProductWith(self.rotMat, bragg)
 
     def setSecondBraggPeak(self, bragg):
+        """
+        :param bragg:
+        :return:
+        """
         for i in range(2):
             self.braggSetRot[1][1][i] = bragg[i]
         self.braggSetRot[1][0] = Matrix.getProductWith(self.rotMatT, bragg)

@@ -1,12 +1,20 @@
 import numpy as np
 
 def get_refine_bragg_point(data,point_1,point_2):
+    """
+    :param data:
+    :param point_1:
+    :param point_2:
+    :return:
+    """
     lenx,leny = np.shape(data)
     select_area_1 = get_select_area(data,point_1)
     select_area_2 = get_select_area(data,point_2)
     max_point_1 = max_point(select_area_1.empty_bragg)
     max_point_2 = max_point(select_area_2.empty_bragg)
     return max_point_1.max_point, max_point_2.max_point
+
+
 class get_select_area:
 
     def __init__(self, data, point_data):
@@ -43,3 +51,5 @@ class max_point:
         index_y = int(index_y - len_y / 2)
         print(index_x, index_y)
         return index_x, index_y
+
+
